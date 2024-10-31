@@ -93,4 +93,5 @@ export class User {
             this.role === user.getRole()
         );
     }
+    
 }

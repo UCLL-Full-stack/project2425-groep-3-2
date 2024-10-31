@@ -38,6 +38,9 @@ app.get('/chores', choreRouter);
 app.get('/chores/:id', choreRouter);
 app.post('/chores/assign', choreRouter);
 app.get('/chores/user/:userId',choreRouter)
+app.post('/users', userRouter);
+app.put('/users/:id', userRouter);
+app.delete('/users/:id', userRouter);
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });
