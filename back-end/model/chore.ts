@@ -1,5 +1,4 @@
 import { User } from '../types';
-
 export class Chore {
     public id: number;
     private title: string;
@@ -16,6 +15,7 @@ export class Chore {
         createdAt: number;
         assignedUsers?: User[]; 
     }) {
+        this.validate(chore);
         this.id = chore.id; 
         this.title = chore.title;
         this.description = chore.description;

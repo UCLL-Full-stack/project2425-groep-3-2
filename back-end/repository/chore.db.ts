@@ -2,7 +2,10 @@ import { Chore, UserChore, ChoreStatus } from '../types';
 import { Chore as ChoreModel } from '../model/chore'; 
 import userRepository from './user.db';
 
-
+const child1Id = 2;
+const child2Id = 3;
+const child1 = userRepository.getUserById(child1Id);
+const child2 = userRepository.getUserById(child2Id);
 const chores: ChoreModel[] = [
     new ChoreModel({
         id: 1,
@@ -10,7 +13,7 @@ const chores: ChoreModel[] = [
         description: 'Wipe down the counters and clean the dishes.',
         points: 5,
         createdAt: Date.now(),
-        assignedUsers: [],
+        assignedUsers: child1 ? [child1] : [], 
     }),
     new ChoreModel({
         id: 2,
@@ -18,7 +21,7 @@ const chores: ChoreModel[] = [
         description: 'Dispose of the trash in the kitchen.',
         points: 3,
         createdAt: Date.now(),
-        assignedUsers: [],
+        assignedUsers: child1 && child2 ? [child1, child2] : [],
     }),
     new ChoreModel({
         id: 3,
@@ -26,7 +29,7 @@ const chores: ChoreModel[] = [
         description: 'Vacuum the carpets and tidy up the furniture.',
         points: 4,
         createdAt: Date.now(),
-        assignedUsers: [],
+        assignedUsers: child2 ? [child2] : [], 
     }),
 ];
 
