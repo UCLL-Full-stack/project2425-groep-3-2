@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import {userRouter} from './controller/user.routes';
+import { choreRouter } from './controller/chore.routes';
 
 const app = express();
 dotenv.config();
@@ -33,6 +34,10 @@ app.use(bodyParser.json());
 app.get('/users', userRouter);
 app.get('/users/:id', userRouter);
 app.post('/login', userRouter);
+app.get('/chores', choreRouter);
+app.get('/chores/:id', choreRouter);
+app.post('/chores/assign', choreRouter);
+app.get('/chores/user/:userId',choreRouter)
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });

@@ -1,25 +1,26 @@
-import { Role } from '../types';
+import { Chore, Role } from '../types';
 
 export class User {
-    private id?: number;
+    private id: number;
     private name: string;
     private email: string;
     private password: string;
     private role: Role;
     private createdAt: Date;
     private updatedAt: Date;
+    private chores: Chore[];
 
     constructor(user: {
-        id?: number;
+        id: number; 
         name: string;
         email: string;
         password: string;
         role: Role;
         createdAt?: Date;
         updatedAt?: Date;
+        chores?: Chore[];
     }) {
         this.validate(user);
-
         this.id = user.id;
         this.name = user.name;
         this.email = user.email;
@@ -27,9 +28,17 @@ export class User {
         this.role = user.role;
         this.createdAt = user.createdAt || new Date();
         this.updatedAt = user.updatedAt || new Date();
+        this.chores = user.chores || [];
     }
 
-    getId(): number | undefined {
+    getChores(): Chore[] {
+        return this.chores;
+    }
+
+    addChore(chore: Chore): void {
+        this.chores.push(chore);
+    }
+    getId(): number {
         return this.id;
     }
 

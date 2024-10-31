@@ -4,15 +4,22 @@ const users = [
     new User({
         id: 1,
         name: 'John Doe',
-        email: 'john.doe@example.com',
+        email: 'john.doe@test.com',
         password: 'password123',
         role: 'parent',
     }),
     new User({
         id: 2,
         name: 'Jane Smith',
-        email: 'jane.smith@example.com',
+        email: 'jane.smith@test.com',
         password: 'password456',
+        role: 'child',
+    }),
+    new User({
+        id: 3,
+        name: 'Bobby Smith',
+        email: 'bobby.smith@test.com',
+        password: 'password789',
         role: 'child',
     }),
 ];
