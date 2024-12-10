@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int            @id @default(autoincrement())
+  name      String
+  email     String         @unique
+  password  String
+  role      String
+  wallet    Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  chores    ChoreAssignment[]
+}
+
+model Chore {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  points      Int
+  createdAt   DateTime @default(now())
+  assignedTo  ChoreAssignment[]
+}
+
+model ChoreAssignment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  choreId   Int
+  status    String
+  assignedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  chore Chore @relation(fields: [choreId], references: [id])
+
+  @@unique([userId, choreId])
+}
+
+

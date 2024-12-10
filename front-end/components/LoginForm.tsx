@@ -14,13 +14,15 @@ const LoginForm = () => {
         try {
             const response = await userService.login(email, password);
             if (response) {
-                const userRole = response.user.role; 
-                if (userRole === 'parent') {
-                    router.push('/ChildrenOverview');
-                } else if (userRole === 'child') {
-                    router.push('/TaskOverview'); 
+                // Save the logged-in user in localStorage
+                localStorage.setItem('user', JSON.stringify(response.user));
+
+                // Trigger a route change after successful login
+                const userRole = response.user.role;
+                if (userRole === 'parent' || userRole === 'child') {
+                    // Redirect to HomePage after login
+                    router.push('/HomePage');
                 }
-                console.log('Login successful');
             }
         } catch (err) {
             setError('Invalid email or password');
@@ -67,17 +69,14 @@ const LoginForm = () => {
                         Login
                     </button>
                     <button
-                    onClick={() => router.push('/')}
-                    className="w-full bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition duration-200"
-                >
-                    No account? Register
-                </button>
+                        onClick={() => router.push('/')}
+                        className="w-full bg-gray-300 text-gray-700 font-semibold py-2 rounded-md hover:bg-gray-400 transition duration-200"
+                    >
+                        No account? Register
+                    </button>
                 </form>
-                
             </div>
-            
         </div>
-        
     );
 };
 

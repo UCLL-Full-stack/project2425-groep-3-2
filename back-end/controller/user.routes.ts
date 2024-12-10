@@ -58,10 +58,10 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
             return res.status(200).json({
                 message: 'Login successful',
                 user: {
-                    id: user.getId(),
-                    name: user.getName(),
-                    email: user.getEmail(),
-                    role: user.getRole(),
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
                 },
             });
         } else {
@@ -105,10 +105,10 @@ userRouter.get('/users', async (req: Request, res: Response, next: NextFunction)
         const users = await userService.getAllUsers();
 
         const usersResponse = users.map(user => ({
-            id: user.getId(),
-            name: user.getName(),
-            email: user.getEmail(),
-            role: user.getRole(),
+            id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
         }));
 
         res.status(200).json(usersResponse);
@@ -157,10 +157,10 @@ userRouter.get('/users/:id', async (req: Request, res: Response, next: NextFunct
 
         if (user) {
             return res.status(200).json({
-                id: user.getId(),
-                name: user.getName(),
-                email: user.getEmail(),
-                role: user.getRole(),
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
             });
         } else {
             return res.status(404).json({

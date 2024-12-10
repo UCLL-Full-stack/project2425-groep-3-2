@@ -11,14 +11,15 @@ describe('Chore', () => {
             description: 'This is a test chore',
             points: 10,
             createdAt: Date.now(),
+            assignedUsers: [],
         });
     });
 
     it('should instantiate with correct values', () => {
-        expect(chore.getId()).toBe(1);
-        expect(chore.getTitle()).toBe('Test Chore');
-        expect(chore.getDescription()).toBe('This is a test chore');
-        expect(chore.getPoints()).toBe(10);
+        expect(chore.id).toBe(1);
+        expect(chore.title).toBe('Test Chore');
+        expect(chore.description).toBe('This is a test chore');
+        expect(chore.points).toBe(10);
     });
 
     it('should assign a user', () => {
@@ -56,6 +57,7 @@ describe('Chore', () => {
                 description: 'Invalid chore',
                 points: -5,
                 createdAt: Date.now(),
+                assignedUsers: [],
             });
         }).toThrow('Title is required');
         
@@ -66,6 +68,7 @@ describe('Chore', () => {
                 description: '',
                 points: 10,
                 createdAt: Date.now(),
+                assignedUsers: [],
             });
         }).toThrow('Description is required');
 
@@ -76,6 +79,7 @@ describe('Chore', () => {
                 description: 'Valid Description',
                 points: -1,
                 createdAt: Date.now(),
+                assignedUsers: [],
             });
         }).toThrow('Points must be a positive integer');
     });

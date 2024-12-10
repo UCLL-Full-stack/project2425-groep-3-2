@@ -1,82 +1,68 @@
-import { Chore, UserChore, ChoreStatus } from '../types';
-import { Chore as ChoreModel } from '../model/chore'; 
-import userRepository from './user.db';
+import { PrismaClient } from '@prisma/client';
 
-const child1Id = 2;
-const child2Id = 3;
-const child1 = userRepository.getUserById(child1Id);
-const child2 = userRepository.getUserById(child2Id);
-const chores: ChoreModel[] = [
-    new ChoreModel({
-        id: 1,
-        title: 'Clean the kitchen',
-        description: 'Wipe down the counters and clean the dishes.',
-        points: 5,
-        createdAt: Date.now(),
-        assignedUsers: child1 ? [child1] : [], 
-    }),
-    new ChoreModel({
-        id: 2,
-        title: 'Take out the trash',
-        description: 'Dispose of the trash in the kitchen.',
-        points: 3,
-        createdAt: Date.now(),
-        assignedUsers: child1 && child2 ? [child1, child2] : [],
-    }),
-    new ChoreModel({
-        id: 3,
-        title: 'Vacuum the living room',
-        description: 'Vacuum the carpets and tidy up the furniture.',
-        points: 4,
-        createdAt: Date.now(),
-        assignedUsers: child2 ? [child2] : [], 
-    }),
-];
+const prisma = new PrismaClient();
 
-
-const getAllChores = (): ChoreModel[] => {
-    return chores;
-};
-
-const getChoreById = (id: number): ChoreModel | null => {
-    const chore = chores.find(chore => chore.getId() === id);
-    return chore || null;
-};
-
-const addChore = (title: string, description: string, points: number): ChoreModel => {
-    const newChore = new ChoreModel({
-        id: Date.now(),
-        title,
-        description,
-        points,
-        createdAt: Date.now(),
-        assignedUsers: [],
+const getAllChores = async () => {
+    return await prisma.chore.findMany({
+        include: {
+            assignedTo: {
+                include: {
+                    user: true,
+                },
+            },
+        },
     });
-    chores.push(newChore);
-    return newChore;
 };
 
-const assignChoreToUser = (userId: number, choreId: number, status: ChoreStatus): UserChore => {
-    const user = userRepository.getUserById(userId);
-    const chore = getChoreById(choreId);
+const getChoreById = async (id: number) => {
+    return await prisma.chore.findUnique({
+        where: { id },
+        include: {
+            assignedTo: {
+                include: {
+                    user: true,
+                },
+            },
+        },
+    });
+};
 
-    if (user && chore) {
-        const newAssignment: UserChore = {
+const addChore = async (title: string, description: string, points: number) => {
+    return await prisma.chore.create({
+        data: {
+            title,
+            description,
+            points,
+        },
+    });
+};
+
+const assignChoreToUser = async (
+    userId: number,
+    choreId: number,
+    status: string
+) => {
+    return await prisma.choreAssignment.create({
+        data: {
             userId,
             choreId,
             status,
-            assignedAt: Date.now(),
-        };
-        
-        chore.assignUser(user); 
-        return newAssignment;
-    } else {
-        throw new Error('User or Chore not found');
-    }
+        },
+        include: {
+            user: true,
+            chore: true,
+        },
+    });
 };
 
-const getChoresByUserId = (userId: number): ChoreModel[] => {
-    return chores.filter(chore => chore.getAssignedUsers().some(user => user.getId() === userId));
+const getChoresByUserId = async (userId: number) => {
+    const assignments = await prisma.choreAssignment.findMany({
+        where: { userId },
+        include: {
+            chore: true,
+        },
+    });
+    return assignments.map(assignment => assignment.chore);
 };
 
 export default {

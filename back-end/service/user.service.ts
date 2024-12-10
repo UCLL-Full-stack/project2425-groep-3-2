@@ -1,52 +1,45 @@
-import { User } from '../model/user';
+import { User } from '@prisma/client';
 import userRepository from '../repository/user.db';
 
-
-const getAllUsers = (): User[] => {
-    return userRepository.getAllUsers();
+const getAllUsers = async (): Promise<User[]> => {
+    return await userRepository.getAllUsers();
 };
 
-
-const getUserById = (id: number): User | null => {
-    return userRepository.getUserById(id);
+const getUserById = async (id: number): Promise<User | null> => {
+    return await userRepository.getUserById(id);
 };
 
-
-const getUserByEmail = (email: string): User | null => {
-    return userRepository.getUserByEmail(email);
+const getUserByEmail = async (email: string): Promise<User | null> => {
+    return await userRepository.getUserByEmail(email);
 };
 
-
-const verifyLogin = (email: string, password: string): User | null => {
-    const user = userRepository.getUserByEmail(email);
-    if (user && user.getPassword() === password) {
+const verifyLogin = async (email: string, password: string): Promise<User | null> => {
+    const user = await userRepository.getUserByEmail(email);
+    if (user && user.password === password) {
         return user;
     }
     return null;
 };
 
-
-const createUser = (userData: {
+const createUser = async (userData: {
     name: string;
     email: string;
     password: string;
-    role: 'parent' | 'child';
-}): User => {
-    const newUser = userRepository.createUser(userData);
-    return newUser;
+    role: string;
+}): Promise<User> => {
+    return await userRepository.createUser(userData);
 };
 
-
-const updateUser = (id: number, userData: { name?: string; email?: string; role?: 'parent' | 'child' }): User | null => {
-    const updatedUser = userRepository.updateUser(id, userData);
-    return updatedUser;
+const updateUser = async (
+    id: number,
+    userData: { name?: string; email?: string; role?: string }
+): Promise<User | null> => {
+    return await userRepository.updateUser(id, userData);
 };
 
-
-const deleteUser = (id: number): void => {
-    userRepository.deleteUser(id);
+const deleteUser = async (id: number): Promise<void> => {
+    await userRepository.deleteUser(id);
 };
-
 
 export default {
     getAllUsers,

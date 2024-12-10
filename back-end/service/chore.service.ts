@@ -1,30 +1,34 @@
-    import { Chore as ChoreModel, UserChore, ChoreStatus } from '../types';
-    import choreRepository from '../repository/chore.db';
+import { Chore, ChoreAssignment } from '@prisma/client';
+import choreRepository from '../repository/chore.db';
 
-    const getAllChores = (): ChoreModel[] => {
-        return choreRepository.getAllChores();
-    };
+const getAllChores = async (): Promise<(Chore & { assignedTo: ChoreAssignment[] })[]> => {
+    return await choreRepository.getAllChores();
+};
 
-    const getChoreById = (id: number): ChoreModel | null => {
-        return choreRepository.getChoreById(id);
-    };
+const getChoreById = async (id: number): Promise<Chore | null> => {
+    return await choreRepository.getChoreById(id);
+};
 
-    const addChore = (title: string, description: string, points: number): ChoreModel => {
-        return choreRepository.addChore(title, description, points);
-    };
+const addChore = async (title: string, description: string, points: number): Promise<Chore> => {
+    return await choreRepository.addChore(title, description, points);
+};
 
-    const assignChoreToUser = (userId: number, choreId: number, status: ChoreStatus): UserChore => {
-        return choreRepository.assignChoreToUser(userId, choreId, status);
-    };
+const assignChoreToUser = async (
+    userId: number,
+    choreId: number,
+    status: string
+): Promise<ChoreAssignment> => {
+    return await choreRepository.assignChoreToUser(userId, choreId, status);
+};
 
-    const getChoresByUserId = (userId: number): ChoreModel[] => {
-        return choreRepository.getChoresByUserId(userId);
-    };
+const getChoresByUserId = async (userId: number): Promise<Chore[]> => {
+    return await choreRepository.getChoresByUserId(userId);
+};
 
-    export default {
-        getAllChores,
-        getChoreById,
-        addChore,
-        assignChoreToUser,
-        getChoresByUserId,
-    };
+export default {
+    getAllChores,
+    getChoreById,
+    addChore,
+    assignChoreToUser,
+    getChoresByUserId,
+};

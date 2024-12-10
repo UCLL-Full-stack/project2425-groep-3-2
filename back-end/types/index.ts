@@ -1,33 +1,36 @@
 export type Role = 'parent' | 'child';
 
-export interface User {
-    getId(): number; 
-    getName(): string; 
-    getEmail(): string;
-    getPassword(): string;
-    getRole(): Role;
-    getChores(): Chore[]; 
+export type User = {
+    equals(arg0: any): unknown;
+    id?: number; 
+    name?: string; 
+    email?: string;
+    password?: string;
+    role?: Role;
+    wallet?: number;
+    chores?: Chore[]; 
 }
 
-export interface Chore {
-    getId(): number;
-    getTitle(): string;
-    getDescription(): string;
-    getPoints(): number;
-    getCreatedAt(): number;
-    getAssignedUsers(): User[];
+export type Chore ={
+    equals(arg0: any): unknown;
+    id?: number;
+    title?: string;
+    description?: string;
+    points?: number;
+    assignedUsers: User[];
+    createdAt?: number;
 }
 
 export type ChoreStatus = 'incomplete' | 'awaiting acceptance' | 'complete';
 
-export interface UserChore {
-    userId: number;
-    choreId: number;
-    status: ChoreStatus; 
-    assignedAt: number; 
+export type  UserChore ={
+    user: User;
+    chore: Chore;
+    status?: ChoreStatus; 
+    assignedAt?: number; 
 }
 
-export interface AuthPayload {
+export type AuthPayload ={
     email: string;
     password: string;
 }

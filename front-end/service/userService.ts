@@ -44,6 +44,13 @@ const updateUser = (userId: string, updatedData: { name?: string; email?: string
         body: JSON.stringify(updatedData),
     }).then(response => response.json());
 };
+const getCurrentUser = () => {
+    const user = localStorage.getItem('user');
+    if (user) {
+        return JSON.parse(user); 
+    }
+    return null;
+};
 
 const login = async (email: string, password: string) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
@@ -60,7 +67,12 @@ const login = async (email: string, password: string) => {
 
     return response.json(); 
 };
-
+const logout = () => {
+    localStorage.removeItem('user'); 
+    return fetch('/api/logout', {
+        method: 'POST',
+    });
+};
 const userService = {
     getAllUsers,
     getUserById,
@@ -68,6 +80,9 @@ const userService = {
     updateUser,
     deleteUserById,
     login,
+    getCurrentUser,
+    logout,
+
 };
 
 export default userService;

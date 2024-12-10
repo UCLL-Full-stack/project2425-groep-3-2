@@ -15,10 +15,10 @@ describe('User', () => {
     });
 
     it('should instantiate with correct values', () => {
-        expect(user.getId()).toBe(1);
-        expect(user.getName()).toBe('Alice');
-        expect(user.getEmail()).toBe('alice@example.com');
-        expect(user.getRole()).toBe('parent');
+        expect(user.id).toBe(1);
+        expect(user.name).toBe('Alice');
+        expect(user.email).toBe('alice@example.com');
+        expect(user.role).toBe('parent');
     });
 
     it('should add a chore to the user', () => {
@@ -28,10 +28,11 @@ describe('User', () => {
             description: 'This is a test chore',
             points: 10,
             createdAt: Date.now(),
+            assignedUsers: [], 
         });
 
-        user.addChore(chore);
-        expect(user.getChores()).toContain(chore);
+        chore.assignedUsers.push(user);
+        expect(user.CHores).toContain(chore);
     });
 
     it('should throw an error for invalid user creation', () => {

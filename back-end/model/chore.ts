@@ -1,19 +1,19 @@
 import { User } from '../types';
 export class Chore {
-    public id: number;
-    private title: string;
-    private description: string;
-    private points: number;
-    private createdAt: number;
-    private assignedUsers: User[];
+    readonly id?: number;
+    readonly title: string;
+    readonly description: string;
+    readonly points: number;
+    readonly createdAt?: number;
+    readonly assignedUsers: User[];
 
     constructor(chore: {
-        id: number; 
+        id?: number; 
         title: string;
         description: string;
         points: number;
-        createdAt: number;
-        assignedUsers?: User[]; 
+        createdAt?: number;
+        assignedUsers: User[]; 
     }) {
         this.validate(chore);
         this.id = chore.id; 
@@ -24,38 +24,7 @@ export class Chore {
         this.assignedUsers = chore.assignedUsers || []; 
     }
 
-    getId(): number {
-        return this.id;
-    }
-
-    getAssignedUsers(): User[] {
-        return this.assignedUsers;
-    }
-
-    assignUser(user: User): void {
-        if (!this.assignedUsers.includes(user)) {
-            this.assignedUsers.push(user);
-        }
-    }
-
-    getTitle(): string {
-        return this.title;
-    }
-
-    getDescription(): string {
-        return this.description;
-    }
-
-    getPoints(): number {
-        return this.points;
-    }
-
-    getCreatedAt(): number {
-        return this.createdAt;
-    }
-
-
-    private validate(chore: { title: string; description: string; points: number }) {
+     validate(chore: { title: string; description: string; points: number }) {
         if (!chore.title?.trim()) {
             throw new Error('Title is required');
         }
@@ -64,6 +33,32 @@ export class Chore {
         }
         if (chore.points < 0) {
             throw new Error('Points must be a positive integer');
+        }
+    }
+    equals({
+        id,
+        title,
+        description,
+        points,
+        createdAt,
+        assignedUsers
+    }: Chore): boolean {
+        return (
+            this.id === id &&
+            this.title === title &&
+            this.description === description &&
+            this.points === points &&
+            this.createdAt === createdAt &&
+            this.assignedUsers.every((assignedUser, index) => assignedUser.equals(assignedUsers[index]))
+        );
+    }
+
+    getAssignedUsers(): User[] {
+        return this.assignedUsers;
+    }
+    assignUser(user: User): void {
+        if (!this.assignedUsers.some(assignedUser => assignedUser.id === user.id)) {
+            this.assignedUsers.push(user);
         }
     }
 }

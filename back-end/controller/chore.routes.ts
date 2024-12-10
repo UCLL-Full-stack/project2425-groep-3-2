@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import choreService from '../service/chore.service';
-
+import {Chore, User} from '../types';
 const choreRouter = express.Router();
 
 /**
@@ -44,29 +44,17 @@ const choreRouter = express.Router();
  *       500:
  *         description: Internal server error.
  */
-choreRouter.get('/chores', async (req: Request, res: Response, next: NextFunction) => {
+choreRouter.get('/chores', async (req: Request, res: Response) => {
     try {
         const chores = await choreService.getAllChores();
 
-        const choresResponse = chores.map(chore => ({
-            id: chore.getId(),
-            title: chore.getTitle(),
-            description: chore.getDescription(),
-            points: chore.getPoints(),
-            createdAt: chore.getCreatedAt(),
-            assignedUsers: chore.getAssignedUsers().map(user => ({
-                id: user.getId(),
-                name: user.getName(),
-                email: user.getEmail(),
-                role: user.getRole(),
-            })),
-        }));
-
-        res.status(200).json(choresResponse);
+        return res.status(200).json(chores);
     } catch (error) {
-        next(error);
+        res.status(400).json({ status: 'error', errorMessage: "error" });
     }
 });
+
+
 
 /**
  * @swagger
@@ -116,34 +104,24 @@ choreRouter.get('/chores', async (req: Request, res: Response, next: NextFunctio
  *       500:
  *         description: Internal server error.
  */
-choreRouter.get('/chores/:id', async (req: Request, res: Response, next: NextFunction) => {
+choreRouter.get('/chores/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const chore = await choreService.getChoreById(Number(id));
 
         if (chore) {
-            return res.status(200).json({
-                id: chore.getId(),
-                title: chore.getTitle(),
-                description: chore.getDescription(),
-                points: chore.getPoints(),
-                createdAt: chore.getCreatedAt(),
-                assignedUsers: chore.getAssignedUsers().map(user => ({
-                    id: user.getId(),
-                    name: user.getName(),
-                    email: user.getEmail(),
-                    role: user.getRole(),
-                })),
-            });
+            return res.status(200).json(chore);
         } else {
             return res.status(404).json({
                 message: 'Chore not found',
             });
         }
     } catch (error) {
-        next(error);
+        res.status(400).json({ status: 'error', errorMessage: "error" });
     }
 });
+
+
 
 /**
  * @swagger
@@ -200,29 +178,19 @@ choreRouter.get('/chores/:id', async (req: Request, res: Response, next: NextFun
  *       500:
  *         description: Internal server error.
  */
-choreRouter.post('/chores', async (req: Request, res: Response, next: NextFunction) => {
+choreRouter.post('/chores', async (req: Request, res: Response) => {
     try {
         const { title, description, points } = req.body;
-
         const newChore = await choreService.addChore(title, description, points);
 
-        return res.status(201).json({
-            id: newChore.getId(),
-            title: newChore.getTitle(),
-            description: newChore.getDescription(),
-            points: newChore.getPoints(),
-            createdAt: newChore.getCreatedAt(),
-            assignedUsers: newChore.getAssignedUsers().map(user => ({
-                id: user.getId(),
-                name: user.getName(),
-                email: user.getEmail(),
-                role: user.getRole(),
-            })),
-        });
+        // Directly return the newChore if the format matches the required response
+        res.status(201).json(newChore);
     } catch (error) {
-        next(error);
+        res.status(400).json({ status: 'error', errorMessage: "can't add chore" });
     }
 });
+
+
 
 /**
  * @swagger
@@ -328,35 +296,22 @@ choreRouter.post('/chores/assign', async (req: Request, res: Response, next: Nex
  *       500:
  *         description: Internal server error.
  */
-choreRouter.get('/chores/user/:userId', async (req: Request, res: Response, next: NextFunction) => {
+choreRouter.get('/chores/user/:userId', async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
         const chores = await choreService.getChoresByUserId(Number(userId));
-
         if (chores.length > 0) {
-            const choresResponse = chores.map(chore => ({
-                id: chore.getId(),
-                title: chore.getTitle(),
-                description: chore.getDescription(),
-                points: chore.getPoints(),
-                createdAt: chore.getCreatedAt(),
-                assignedUsers: chore.getAssignedUsers().map(user => ({
-                    id: user.getId(),
-                    name: user.getName(),
-                    email: user.getEmail(),
-                    role: user.getRole(),
-                })),
-            }));
-
-            return res.status(200).json(choresResponse);
+            return res.status(200).json(chores);
         } else {
             return res.status(404).json({
                 message: 'User not found or no chores assigned.',
             });
         }
     } catch (error) {
-        next(error);
+        res.status(400).json({ status: 'error', errorMessage: "error" });
     }
 });
+
+
 
 export { choreRouter };

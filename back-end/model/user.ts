@@ -1,17 +1,18 @@
 import { Chore, Role } from '../types';
 
 export class User {
-    private id: number;
-    private name: string;
-    private email: string;
-    private password: string;
-    private role: Role;
-    private createdAt: Date;
-    private updatedAt: Date;
-    private chores: Chore[];
+    readonly id?: number;
+    readonly name: string;
+    readonly email: string;
+    readonly password: string;
+    readonly role: Role;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
+    readonly chores: Chore[];
+    readonly wallet: number;
 
     constructor(user: {
-        id: number; 
+        id?: number; 
         name: string;
         email: string;
         password: string;
@@ -19,6 +20,7 @@ export class User {
         createdAt?: Date;
         updatedAt?: Date;
         chores?: Chore[];
+        wallet?: number;
     }) {
         this.validate(user);
         this.id = user.id;
@@ -29,44 +31,10 @@ export class User {
         this.createdAt = user.createdAt || new Date();
         this.updatedAt = user.updatedAt || new Date();
         this.chores = user.chores || [];
+        this.wallet = user.wallet || 0; 
     }
 
-    getChores(): Chore[] {
-        return this.chores;
-    }
-
-    addChore(chore: Chore): void {
-        this.chores.push(chore);
-    }
-    getId(): number {
-        return this.id;
-    }
-
-    getName(): string {
-        return this.name;
-    }
-
-    getEmail(): string {
-        return this.email;
-    }
-
-    getPassword(): string {
-        return this.password;
-    }
-
-    getRole(): Role {
-        return this.role;
-    }
-
-    getCreatedAt(): Date {
-        return this.createdAt;
-    }
-
-    getUpdatedAt(): Date {
-        return this.updatedAt;
-    }
-
-    private validate(user: {
+    validate(user: {
         name: string;
         email: string;
         password: string;
@@ -85,13 +53,31 @@ export class User {
             throw new Error('Role is required');
         }
     }
-    equals(user: User): boolean {
+
+    equals({
+        id,
+        name,
+        email,
+        password,
+        role,
+        createdAt,
+        updatedAt,
+        chores,
+        wallet 
+    }: User): boolean {  
         return (
-            this.name === user.getName() &&
-            this.email === user.getEmail() &&
-            this.password === user.getPassword() &&
-            this.role === user.getRole()
+            this.id === id &&
+            this.name === name &&
+            this.email === email &&
+            this.password === password &&
+            this.role === role &&
+            this.createdAt === createdAt &&
+            this.updatedAt === updatedAt &&
+            this.chores.every((chore, index) => chore.equals(chores[index])) &&
+            this.wallet === wallet 
         );
     }
-    
+
+
+   
 }
