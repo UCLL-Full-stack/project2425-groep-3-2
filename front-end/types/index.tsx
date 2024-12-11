@@ -6,7 +6,10 @@ export interface User {
     email: string;
     password: string;
     role: Role;
-    chores?: Chore[];
+    wallet: number;
+    createdAt: Date;
+    updatedAt: Date;
+    chores?: ChoreAssignment[];
 }
 
 export interface Chore {
@@ -15,7 +18,17 @@ export interface Chore {
     description: string;
     points: number;
     createdAt: Date;
-    assignedUsers?: User[];
+    assignedTo: ChoreAssignment[];
+}
+
+export interface ChoreAssignment {
+    id: number;
+    userId: number;
+    choreId: number;
+    status: 'pending' | 'completed' | 'incomplete';
+    assignedAt: Date;
+    user: User; 
+    chore: Chore; 
 }
 
 export type ChoreStatus = 'incomplete' | 'awaiting acceptance' | 'complete';

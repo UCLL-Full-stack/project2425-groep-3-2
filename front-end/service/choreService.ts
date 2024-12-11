@@ -15,7 +15,15 @@ const getChoreById = (choreId: string) => {
         },
     }).then(response => response.json());
 };
-
+const removeChoreAssignment = (userId: number, choreId: number) => {
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/chores/remove-assignment`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, choreId }),
+    }).then(response => response.json());
+};
 const createChore = (chore: { title: string; description: string; points: number }) => {
     return fetch(`${process.env.NEXT_PUBLIC_API_URL}/chores`, {
         method: 'POST',
@@ -72,6 +80,7 @@ const choreService = {
     deleteChoreById,
     getChoresByUserId,
     updateChore,
+    removeChoreAssignment,
 };
 
 export default choreService;

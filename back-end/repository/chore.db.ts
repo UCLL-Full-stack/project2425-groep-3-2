@@ -36,6 +36,20 @@ const addChore = async (title: string, description: string, points: number) => {
         },
     });
 };
+const removeChoreAssignment = async (userId: number, choreId: number) => {
+    const result = await prisma.choreAssignment.deleteMany({
+        where: {
+            userId,
+            choreId,
+        },
+    });
+
+    if (result.count === 0) {
+        throw new Error('No assignment found to remove');
+    }
+
+    return result;
+};
 
 const assignChoreToUser = async (
     userId: number,
@@ -71,4 +85,5 @@ export default {
     addChore,
     assignChoreToUser,
     getChoresByUserId,
+    removeChoreAssignment
 };

@@ -1,9 +1,9 @@
 import LoginForm from '../components/loginForm';
-
+import Header from '../components/Header';
 const Login = () => {
   return (
     <div>
-      <h1>Login</h1>
+      <Header />
       <LoginForm />
     </div>
   );

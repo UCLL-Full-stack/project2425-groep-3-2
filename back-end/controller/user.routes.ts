@@ -5,6 +5,16 @@ const userRouter = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
  * /login:
  *   post:
  *     summary: User login.
@@ -52,17 +62,18 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
     try {
         const { email, password } = req.body;
 
-        const user = await userService.verifyLogin(email, password);
+        const authResponse = await userService.authenticate(email, password);
 
-        if (user) {
+        if (authResponse) {
             return res.status(200).json({
                 message: 'Login successful',
                 user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
+                    id: authResponse.user.id,
+                    name: authResponse.user.name,
+                    email: authResponse.user.email,
+                    role: authResponse.user.role,
                 },
+                token: authResponse.token,
             });
         } else {
             return res.status(401).json({
@@ -78,6 +89,8 @@ userRouter.post('/login', async (req: Request, res: Response, next: NextFunction
  * @swagger
  * /users:
  *   get:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Get a list of all users.
  *     responses:
  *       200:
@@ -121,6 +134,8 @@ userRouter.get('/users', async (req: Request, res: Response, next: NextFunction)
  * @swagger
  * /users/{id}:
  *   get:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Get a user by ID.
  *     parameters:
  *       - name: id
@@ -172,7 +187,6 @@ userRouter.get('/users/:id', async (req: Request, res: Response, next: NextFunct
     }
 });
 
-
 /**
  * @swagger
  * /users:
@@ -205,7 +219,7 @@ userRouter.get('/users/:id', async (req: Request, res: Response, next: NextFunct
  *       500:
  *         description: Internal server error.
  */
-userRouter.post('/users', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const newUser = await userService.createUser(req.body);
         res.status(201).json(newUser);
@@ -218,6 +232,8 @@ userRouter.post('/users', async (req: Request, res: Response, next: NextFunction
  * @swagger
  * /users/{id}:
  *   put:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Update a user by ID.
  *     parameters:
  *       - name: id
@@ -265,6 +281,8 @@ userRouter.put('/users/:id', async (req: Request, res: Response, next: NextFunct
  * @swagger
  * /users/{id}:
  *   delete:
+ *     security:
+ *       - bearerAuth: []   # Add Bearer Authentication here
  *     summary: Delete a user by ID.
  *     parameters:
  *       - name: id

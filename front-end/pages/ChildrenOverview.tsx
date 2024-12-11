@@ -3,7 +3,7 @@ import ChildList from '../components/ChildList';
 import userService from '../service/userService';
 import choreService from '../service/choreService';
 import { User, Chore } from '../types';
-
+import Header from '../components/Header';
 const ChildrenOverview = () => {
     const [children, setChildren] = useState<User[]>([]);
     const [chores, setChores] = useState<Record<number, Chore[]>>({});
@@ -44,6 +44,7 @@ const ChildrenOverview = () => {
 
     return (
         <div>
+            <Header />
             <ChildList children={children} chores={chores} />
         </div>
     );

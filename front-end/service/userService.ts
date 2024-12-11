@@ -17,7 +17,7 @@ const getUserById = (userId: string) => {
 };
 
 const createUser = (user: { name: string; email: string; role: string, password:string }) => {
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

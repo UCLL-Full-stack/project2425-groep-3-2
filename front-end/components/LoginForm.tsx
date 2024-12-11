@@ -14,13 +14,9 @@ const LoginForm = () => {
         try {
             const response = await userService.login(email, password);
             if (response) {
-                // Save the logged-in user in localStorage
                 localStorage.setItem('user', JSON.stringify(response.user));
-
-                // Trigger a route change after successful login
                 const userRole = response.user.role;
                 if (userRole === 'parent' || userRole === 'child') {
-                    // Redirect to HomePage after login
                     router.push('/HomePage');
                 }
             }

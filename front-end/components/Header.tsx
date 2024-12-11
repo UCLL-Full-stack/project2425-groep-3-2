@@ -33,12 +33,20 @@ const Header = () => {
                 <h1 className="text-2xl font-bold">My App</h1>
                 <nav>
                     {userRole === 'parent' && (
-                        <button
-                            onClick={() => router.push('/ChildrenOverview')}
-                            className="mr-4 text-white hover:text-gray-300"
-                        >
-                            Children Overview
-                        </button>
+                        <>
+                            <button
+                                onClick={() => router.push('/ChildrenOverview')}
+                                className="mr-4 text-white hover:text-gray-300"
+                            >
+                                Children Overview
+                            </button>
+                            <button
+                                onClick={() => router.push('/Chores')}
+                                className="mr-4 text-white hover:text-gray-300"
+                            >
+                                Chores Overview
+                            </button>
+                        </>
                     )}
                     {userRole === 'child' && (
                         <button
@@ -48,12 +56,15 @@ const Header = () => {
                             Task Overview
                         </button>
                     )}
-                    <button
-                        onClick={handleLogout}
-                        className="text-white hover:text-gray-300"
-                    >
-                        Logout
-                    </button>
+                    
+                    {userRole && (
+                        <button
+                            onClick={handleLogout}
+                            className="text-white hover:text-gray-300"
+                        >
+                            Logout
+                        </button>
+                    )}
                 </nav>
             </div>
         </header>

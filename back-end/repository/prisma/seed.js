@@ -1,9 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
+
 const prisma = new PrismaClient();
+const saltRounds = 10;
 
 async function main() {
     await prisma.choreAssignment.deleteMany();
-    
     await prisma.user.deleteMany();
     await prisma.chore.deleteMany();
     
@@ -34,8 +36,18 @@ async function main() {
     );
 
     if (usersToCreate.length > 0) {
+        const usersWithHashedPasswords = await Promise.all(
+            usersToCreate.map(async (user) => {
+                const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+                return {
+                    ...user,
+                    password: hashedPassword,
+                };
+            })
+        );
+
         const createdUsers = await prisma.user.createMany({
-            data: usersToCreate,
+            data: usersWithHashedPasswords,
             skipDuplicates: true,
         });
         console.log(`Created ${createdUsers.count} users`);

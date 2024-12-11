@@ -6,7 +6,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import {userRouter} from './controller/user.routes';
 import { choreRouter } from './controller/chore.routes';
-
+import { expressjwt } from 'express-jwt';
 const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
@@ -28,8 +28,26 @@ const swaggerOpts = {
     },
     apis: ['./controller/*.routes.ts'],
 };
+
 const swaggerSpec = swaggerJSDoc(swaggerOpts);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use(
+    expressjwt({
+        secret: process.env.JWT_SECRET || 'default_secret',
+        algorithms: ['HS256'],
+    }).unless({
+        path: [
+            '/signup',    
+            '/login',      
+            '/status',         
+            '/api-docs',         
+            '/swagger-ui.html',
+        ]
+    })
+);
+
+
 app.use(bodyParser.json());
 app.get('/users', userRouter);
 app.get('/users/:id', userRouter);
@@ -41,6 +59,7 @@ app.get('/chores/user/:userId',choreRouter)
 app.post('/users', userRouter);
 app.put('/users/:id', userRouter);
 app.delete('/users/:id', userRouter);
+app.post('/chores/remove-assignment', choreRouter);
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });

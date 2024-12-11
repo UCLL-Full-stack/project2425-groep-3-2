@@ -13,6 +13,10 @@ const addChore = async (title: string, description: string, points: number): Pro
     return await choreRepository.addChore(title, description, points);
 };
 
+const removeChoreAssignment = async (userId: number, choreId: number): Promise<void> => {
+    await choreRepository.removeChoreAssignment(userId, choreId);
+};
+
 const assignChoreToUser = async (
     userId: number,
     choreId: number,
@@ -31,4 +35,5 @@ export default {
     addChore,
     assignChoreToUser,
     getChoresByUserId,
+    removeChoreAssignment
 };
