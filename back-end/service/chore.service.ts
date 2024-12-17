@@ -17,23 +17,66 @@ const removeChoreAssignment = async (userId: number, choreId: number): Promise<v
     await choreRepository.removeChoreAssignment(userId, choreId);
 };
 
+
 const assignChoreToUser = async (
     userId: number,
     choreId: number,
-    status: string
+    status: string = 'incomplete' 
 ): Promise<ChoreAssignment> => {
-    return await choreRepository.assignChoreToUser(userId, choreId, status);
+   
+    const assignedStatus = status || 'incomplete';
+
+    return await choreRepository.assignChoreToUser(userId, choreId, assignedStatus);
 };
+
 
 const getChoresByUserId = async (userId: number): Promise<Chore[]> => {
     return await choreRepository.getChoresByUserId(userId);
 };
+const getChoreAssignmentsByUserId = async (userId: number): Promise<ChoreAssignment[]> => {
+    return await choreRepository.getChoreAssignmentsByUserId(userId);
+};
 
+
+const getChoreAssignmentById = async (assignmentId: number): Promise<ChoreAssignment | null> => {
+    return await choreRepository.getChoreAssignmentById(assignmentId);
+};
+
+const updateChoreAssignmentStatus = async (
+    choreAssignmentId: number,
+    status: 'pending' | 'completed' | 'incomplete'
+): Promise<ChoreAssignment> => {
+    const assignment = await getChoreAssignmentById(choreAssignmentId);
+
+    if (!assignment) {
+        throw new Error('Chore assignment not found');
+    }
+
+    if (assignment.status === 'completed' && status === 'completed') {
+        return assignment;
+    }
+    if (status === 'completed') {
+        await addPointsToUserWallet(assignment.userId, assignment.choreId);
+    }
+    return await choreRepository.updateChoreAssignmentStatus(choreAssignmentId, status);
+};
+
+const addPointsToUserWallet = async (userId: number, choreId: number): Promise<void> => {
+    const chore = await choreRepository.getChoreById(choreId);
+    if (!chore) {
+        throw new Error('Chore not found');
+    }
+    await choreRepository.updateUserWallet(userId, chore.points);
+};
 export default {
     getAllChores,
     getChoreById,
     addChore,
     assignChoreToUser,
     getChoresByUserId,
-    removeChoreAssignment
+    removeChoreAssignment,
+    getChoreAssignmentsByUserId,
+    updateChoreAssignmentStatus,
+    addPointsToUserWallet,
+    getChoreAssignmentById
 };

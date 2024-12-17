@@ -1,7 +1,9 @@
 import express, { NextFunction, Request, Response } from 'express';
 import choreService from '../service/chore.service';
-import { Chore, User } from '../types';
+import { ChoreAssignment } from '@prisma/client';
 const choreRouter = express.Router();
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 /**
  * @swagger
@@ -65,6 +67,135 @@ choreRouter.get('/chores', async (req: Request, res: Response) => {
         return res.status(200).json(chores);
     } catch (error) {
         res.status(400).json({ status: 'error', errorMessage: 'Error fetching chores' });
+    }
+});
+/**
+ * @swagger
+ * /chores/user/{userId}:
+ *   get:
+ *     summary: Get all chores assigned to a user by user ID.
+ *     description: Fetch all chores assigned to a specific user by their ID.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of chores assigned to the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   points:
+ *                     type: number
+ *                   createdAt:
+ *                     type: number
+ *                   assignedUsers:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: number
+ *                         name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         role:
+ *                           type: string
+ *       404:
+ *         description: User not found or no chores assigned.
+ *       500:
+ *         description: Internal server error.
+ */
+choreRouter.get('/chores/user/:userId', async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const chores = await choreService.getChoresByUserId(Number(userId));
+        if (chores.length > 0) {
+            return res.status(200).json(chores);
+        } else {
+            return res.status(404).json({ message: 'User not found or no chores assigned.' });
+        }
+    } catch (error) {
+        res.status(400).json({ status: 'error', errorMessage: 'Error fetching user chores' });
+    }
+});
+/**
+ * @swagger
+ * /chores/assignments/user/{userId}:
+ *   get:
+ *     summary: Get all assignments of a user.
+ *     description: Fetch all chore assignments for a specific user.
+ *     parameters:
+ *       - name: userId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of assignments for the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   choreId:
+ *                     type: number
+ *                   status:
+ *                     type: string
+ *                   assignedAt:
+ *                     type: string
+ *                   chore:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: number
+ *                       title:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       points:
+ *                         type: number
+ *       404:
+ *         description: No assignments found for the user.
+ *       500:
+ *         description: Internal server error.
+ */
+choreRouter.get('/chores/assignments/user/:userId', async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        const assignments = await choreService.getChoreAssignmentsByUserId(Number(userId));
+
+        if (assignments.length > 0) {
+            return res.status(200).json(assignments);
+        } else {
+            return res.status(404).json({ message: 'No assignments found for this user.' });
+        }
+    } catch (error) {
+        res.status(400).json({ status: 'error', errorMessage: 'Error fetching user assignments' });
     }
 });
 
@@ -201,6 +332,79 @@ choreRouter.post('/chores', async (req: Request, res: Response) => {
         res.status(400).json({ status: 'error', errorMessage: 'Error adding chore' });
     }
 });
+/**
+ * @swagger
+ * /chores/assignment/{assignmentId}/status:
+ *   put:
+ *     summary: Update the status of a chore assignment.
+ *     description: Update the status of a specific chore assignment by its ID.
+ *     parameters:
+ *       - name: assignmentId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: ['pending', 'completed', 'incomplete']
+ *                 example: 'completed'
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Status updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 status:
+ *                   type: string
+ *       404:
+ *         description: Assignment not found.
+ *       500:
+ *         description: Internal server error.
+ */
+choreRouter.put('/chores/assignment/:assignmentId/status', async (req: Request, res: Response) => {
+    try {
+        const { assignmentId } = req.params;
+        const { status } = req.body;
+
+        if (!['pending', 'completed', 'incomplete'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status value' });
+        }
+
+        // Fetch the chore assignment details
+        const choreAssignment = await choreService.getChoreAssignmentById(Number(assignmentId));
+        if (!choreAssignment) {
+            return res.status(404).json({ message: 'Chore assignment not found' });
+        }
+
+        // Update the status of the chore assignment (without adding points here)
+        const updatedAssignment = await choreService.updateChoreAssignmentStatus(
+            Number(assignmentId),
+            status as 'pending' | 'completed' | 'incomplete'
+        );
+
+        // Only add points in the service layer (already handled there)
+        res.status(200).json(updatedAssignment);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating chore assignment status', error });
+    }
+});
+
+
 
 /**
  * @swagger
@@ -250,12 +454,14 @@ choreRouter.post('/chores', async (req: Request, res: Response) => {
 choreRouter.post('/chores/assign', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId, choreId, status } = req.body;
-        const assignment = await choreService.assignChoreToUser(userId, choreId, status);
+        const assignment = await choreService.assignChoreToUser(userId, choreId, 'incomplete');
+
         return res.status(200).json(assignment);
     } catch (error) {
         next(error);
     }
 });
+
 
 /**
  * @swagger
@@ -370,5 +576,85 @@ choreRouter.get('/chores/user/:userId', async (req: Request, res: Response) => {
         res.status(400).json({ status: 'error', errorMessage: 'Error fetching user chores' });
     }
 });
+/**
+ * @swagger
+ * /chores/assignments/children:
+ *   get:
+ *     summary: Get all chore assignments for child users.
+ *     description: Fetch all chore assignments that belong to users with the "child" role.
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of chore assignments for children.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: number
+ *                   choreId:
+ *                     type: number
+ *                   userId:
+ *                     type: number
+ *                   status:
+ *                     type: string
+ *                   assignedAt:
+ *                     type: string
+ *                   chore:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: number
+ *                       title:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       points:
+ *                         type: number
+ *                   user:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: number
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       role:
+ *                         type: string
+ *       500:
+ *         description: Internal server error.
+ */
+choreRouter.get('/chores/assignments/children', async (req, res) => {
+    try {
+        const childUsers = await prisma.user.findMany({
+            where: {
+                role: 'child'
+            },
+            select: {
+                id: true
+            }
+        });
+        const childUserIds = childUsers.map(user => user.id);
+        const assignments = await prisma.choreAssignment.findMany({
+            where: {
+                userId: {
+                    in: childUserIds
+                }
+            },
+            include: {
+                chore: true,
+                user: true
+            }
+        });
 
+        res.json(assignments);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch chore assignments for children' });
+    }
+});
 export { choreRouter };

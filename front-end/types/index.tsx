@@ -1,5 +1,5 @@
 export type Role = 'parent' | 'child';
-
+export type Status = 'pending' | 'completed' | 'incomplete';
 export interface User {
     id: number;
     name: string;
@@ -25,20 +25,13 @@ export interface ChoreAssignment {
     id: number;
     userId: number;
     choreId: number;
-    status: 'pending' | 'completed' | 'incomplete';
+    status: Status;
     assignedAt: Date;
     user: User; 
     chore: Chore; 
+    
 }
 
-export type ChoreStatus = 'incomplete' | 'awaiting acceptance' | 'complete';
-
-export interface UserChore {
-    userId: number;
-    choreId: number;
-    status: ChoreStatus;
-    assignedAt: Date;
-}
 
 export interface AuthPayload {
     email: string;

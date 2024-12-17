@@ -1,4 +1,4 @@
-export type Role = 'parent' | 'child';
+export type Role = 'parent' | 'child' | 'admin';
 
 export type User = {
     equals(arg0: any): unknown;
@@ -21,7 +21,7 @@ export type Chore ={
     createdAt?: number;
 }
 
-export type ChoreStatus = 'incomplete' | 'awaiting acceptance' | 'complete';
+export type ChoreStatus = 'pending' | 'incomplete' | 'completed';
 
 export type  UserChore ={
     user: User;

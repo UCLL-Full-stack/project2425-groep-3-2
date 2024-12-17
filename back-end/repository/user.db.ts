@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
@@ -6,11 +6,25 @@ const getAllUsers = async () => {
     return await prisma.user.findMany();
 };
 
-const getUserById = async (id: number) => {
+const getUserById = async (userId: number): Promise<User | null> => {
     return await prisma.user.findUnique({
-        where: { id },
+        where: {
+            id: userId,
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            wallet: true,
+            password: true,
+            createdAt: true,
+            updatedAt: true,
+        },
     });
 };
+
+
 
 const getUserByEmail = async (email: string) => {
     return await prisma.user.findUnique({

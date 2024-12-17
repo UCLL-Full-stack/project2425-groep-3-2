@@ -17,6 +17,7 @@ model User {
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
   chores    ChoreAssignment[]
+  rewards   UserReward[]
 }
 
 model Chore {
@@ -39,6 +40,25 @@ model ChoreAssignment {
   chore Chore @relation(fields: [choreId], references: [id])
 
   @@unique([userId, choreId])
+}
+model Reward {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  points      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users   UserReward[] 
+}
+
+model UserReward {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  rewardId  Int
+  redeemedAt DateTime @default(now())
+
+  user    User   @relation(fields: [userId], references: [id])
+  reward  Reward @relation(fields: [rewardId], references: [id])
 }
 
 

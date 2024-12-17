@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Chore, ChoreAssignment, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -14,18 +14,6 @@ const getAllChores = async () => {
     });
 };
 
-const getChoreById = async (id: number) => {
-    return await prisma.chore.findUnique({
-        where: { id },
-        include: {
-            assignedTo: {
-                include: {
-                    user: true,
-                },
-            },
-        },
-    });
-};
 
 const addChore = async (title: string, description: string, points: number) => {
     return await prisma.chore.create({
@@ -36,6 +24,7 @@ const addChore = async (title: string, description: string, points: number) => {
         },
     });
 };
+
 const removeChoreAssignment = async (userId: number, choreId: number) => {
     const result = await prisma.choreAssignment.deleteMany({
         where: {
@@ -78,6 +67,50 @@ const getChoresByUserId = async (userId: number) => {
     });
     return assignments.map(assignment => assignment.chore);
 };
+const getChoreAssignmentsByUserId = async (userId: number): Promise<ChoreAssignment[]> => {
+    return await prisma.choreAssignment.findMany({
+        where: { userId },
+        include: {
+            chore: true,
+        },
+    });
+};
+const getChoreAssignmentById = async (assignmentId: number): Promise<ChoreAssignment | null> => {
+    return await prisma.choreAssignment.findUnique({
+        where: { id: assignmentId },
+        include: {
+            chore: true,
+            user: true,
+        },
+    });
+};
+
+const getChoreById = async (id: number): Promise<Chore | null> => {
+    return await prisma.chore.findUnique({
+        where: { id },
+    });
+};
+
+const updateUserWallet = async (userId: number, points: number): Promise<void> => {
+    await prisma.user.update({
+        where: { id: userId },
+        data: {
+            wallet: {
+                increment: points,
+            },
+        },
+    });
+};
+
+const updateChoreAssignmentStatus = async (
+    choreAssignmentId: number,
+    status: 'pending' | 'completed' | 'incomplete'
+): Promise<ChoreAssignment> => {
+    return await prisma.choreAssignment.update({
+        where: { id: choreAssignmentId },
+        data: { status },
+    });
+};
 
 export default {
     getAllChores,
@@ -85,5 +118,9 @@ export default {
     addChore,
     assignChoreToUser,
     getChoresByUserId,
-    removeChoreAssignment
+    removeChoreAssignment,
+    updateChoreAssignmentStatus,
+    getChoreAssignmentsByUserId,
+    getChoreAssignmentById,
+    updateUserWallet
 };

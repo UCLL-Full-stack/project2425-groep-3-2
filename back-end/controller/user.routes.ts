@@ -176,6 +176,7 @@ userRouter.get('/users/:id', async (req: Request, res: Response, next: NextFunct
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                wallet: user.wallet,
             });
         } else {
             return res.status(404).json({

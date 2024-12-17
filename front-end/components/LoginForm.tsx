@@ -14,10 +14,16 @@ const LoginForm = () => {
         try {
             const response = await userService.login(email, password);
             if (response) {
+                localStorage.setItem('token', response.token);
                 localStorage.setItem('user', JSON.stringify(response.user));
                 const userRole = response.user.role;
-                if (userRole === 'parent' || userRole === 'child') {
-                    router.push('/HomePage');
+
+                if (userRole === 'parent') {
+                    router.push('/ChildrenOverview');
+                } else if (userRole === 'child') {
+                    router.push('/TaskOverview');
+                } else {
+                    setError('Unauthorized role');
                 }
             }
         } catch (err) {
