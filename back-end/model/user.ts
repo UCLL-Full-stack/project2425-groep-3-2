@@ -1,4 +1,5 @@
-import { Chore, Role } from '../types';
+import { Chore } from './chore'; 
+import { Role } from '../types';
 
 export class User {
     readonly id?: number;
@@ -12,7 +13,7 @@ export class User {
     readonly wallet: number;
 
     constructor(user: {
-        id?: number; 
+        id?: number;
         name: string;
         email: string;
         password: string;
@@ -31,7 +32,7 @@ export class User {
         this.createdAt = user.createdAt || new Date();
         this.updatedAt = user.updatedAt || new Date();
         this.chores = user.chores || [];
-        this.wallet = user.wallet || 0; 
+        this.wallet = user.wallet || 0;
     }
 
     validate(user: {
@@ -54,30 +55,17 @@ export class User {
         }
     }
 
-    equals({
-        id,
-        name,
-        email,
-        password,
-        role,
-        createdAt,
-        updatedAt,
-        chores,
-        wallet 
-    }: User): boolean {  
+    equals(user: User): boolean {
         return (
-            this.id === id &&
-            this.name === name &&
-            this.email === email &&
-            this.password === password &&
-            this.role === role &&
-            this.createdAt === createdAt &&
-            this.updatedAt === updatedAt &&
-            this.chores.every((chore, index) => chore.equals(chores[index])) &&
-            this.wallet === wallet 
+            this.id === user.id &&
+            this.name === user.name &&
+            this.email === user.email &&
+            this.password === user.password &&
+            this.role === user.role &&
+            this.createdAt.getTime() === user.createdAt.getTime() &&
+            this.updatedAt.getTime() === user.updatedAt.getTime() &&
+            this.chores.every((chore, index) => chore.equals(user.chores[index])) && 
+            this.wallet === user.wallet
         );
     }
-
-
-   
 }

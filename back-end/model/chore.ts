@@ -1,4 +1,4 @@
-import { User } from '../types';
+import { User } from './user';
 export class Chore {
     readonly id?: number;
     readonly title: string;

@@ -1,9 +1,8 @@
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import userRepository from '../repository/user.db';
-import choreRepository from '../repository/chore.db';  // Import chore repository
+import choreRepository from '../repository/chore.db';
 import bcrypt from 'bcrypt';
 import generateJWTToken from '../util/jwt';
-import { Role } from '../types';
 
 interface AuthenticatorResponse {
     user: User;
@@ -49,13 +48,13 @@ const authenticate = async (email: string, password: string): Promise<Authentica
     };
 };
 
-const createUser = async (userData: { name: string; email: string; password: string; role: string }): Promise<User> => {
+const createUser = async (userData: { name: string; email: string; password: string; role: UserRole }): Promise<User> => {
     return await userRepository.createUser(userData);
 };
 
 const updateUser = async (
     id: number,
-    userData: { name?: string; email?: string; role?: string }
+    userData: { name?: string; email?: string; role?: UserRole }
 ): Promise<User | null> => {
     return await userRepository.updateUser(id, userData);
 };

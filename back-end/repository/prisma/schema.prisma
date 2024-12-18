@@ -12,12 +12,13 @@ model User {
   name      String
   email     String         @unique
   password  String
-  role      String
+  role      UserRole       
   wallet    Int            @default(0)
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
   chores    ChoreAssignment[]
   rewards   UserReward[]
+  notifications Notification[]
 }
 
 model Chore {
@@ -27,13 +28,14 @@ model Chore {
   points      Int
   createdAt   DateTime @default(now())
   assignedTo  ChoreAssignment[]
+  notifications Notification[]
 }
 
 model ChoreAssignment {
   id        Int      @id @default(autoincrement())
   userId    Int
   choreId   Int
-  status    String
+  status    ChoreStatus
   assignedAt DateTime @default(now())
 
   user  User  @relation(fields: [userId], references: [id])
@@ -41,6 +43,7 @@ model ChoreAssignment {
 
   @@unique([userId, choreId])
 }
+
 model Reward {
   id          Int      @id @default(autoincrement())
   title       String
@@ -48,7 +51,8 @@ model Reward {
   points      Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  users   UserReward[] 
+  users       UserReward[]
+  notifications Notification[]
 }
 
 model UserReward {
@@ -61,4 +65,40 @@ model UserReward {
   reward  Reward @relation(fields: [rewardId], references: [id])
 }
 
+model Notification {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  choreId     Int?      
+  rewardId    Int?      
+  message     String    
+  type        NotificationType    
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  extraData  String?
 
+  user        User      @relation(fields: [userId], references: [id])
+  chore       Chore?    @relation(fields: [choreId], references: [id])
+  reward      Reward?   @relation(fields: [rewardId], references: [id])
+
+  @@index([userId])
+  @@index([choreId])
+  @@index([rewardId])
+}
+
+enum UserRole {
+  admin
+  child
+  parent
+}
+
+enum ChoreStatus {
+  pending
+  completed
+  incomplete
+}
+
+enum NotificationType {
+  CHORE_ASSIGNMENT
+  REWARD_REDEMPTION
+  REWARD_USAGE
+}

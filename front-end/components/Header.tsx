@@ -74,6 +74,18 @@ const Header = () => {
                             >
                                 Task Overview
                             </button>
+                            <button
+                                onClick={() => router.push('/Rewards')}
+                                className="mr-4 text-white hover:text-gray-300"
+                            >
+                                Rewards
+                            </button>
+                            <button
+                                onClick={() => router.push('/MyRewards')}
+                                className="mr-4 text-white hover:text-gray-300"
+                            >
+                                My Rewards
+                            </button>
                             {userPoints !== null ? (
                                 <span className="text-white">Points: {userPoints}</span>
                             ) : (

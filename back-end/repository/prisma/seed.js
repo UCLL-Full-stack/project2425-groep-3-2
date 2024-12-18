@@ -5,14 +5,14 @@ const prisma = new PrismaClient();
 const saltRounds = 10;
 
 async function main() {
-
-    await prisma.choreAssignment.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.chore.deleteMany();
-    await prisma.reward.deleteMany();
+    await prisma.notification.deleteMany();
     await prisma.userReward.deleteMany();
+    await prisma.choreAssignment.deleteMany();
+    await prisma.reward.deleteMany();
+    await prisma.chore.deleteMany();
+    await prisma.user.deleteMany();
 
-    console.log('Cleared existing data from users, chores, assignments, and rewards.');
+    console.log('Cleared existing data from notifications, userReward, choreAssignments, rewards, chores, and users.');
 
     const users = [
         { name: 'John Doe', email: 'john.doe@test.com', password: 'password123', role: 'parent', wallet: 0 },

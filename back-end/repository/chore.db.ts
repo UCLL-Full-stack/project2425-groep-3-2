@@ -1,5 +1,5 @@
-import { Chore, ChoreAssignment, PrismaClient } from '@prisma/client';
-
+import { Chore, ChoreAssignment, ChoreStatus, PrismaClient } from '@prisma/client';
+import { createNotification } from './notification.db';
 const prisma = new PrismaClient();
 
 const getAllChores = async () => {
@@ -43,7 +43,7 @@ const removeChoreAssignment = async (userId: number, choreId: number) => {
 const assignChoreToUser = async (
     userId: number,
     choreId: number,
-    status: string
+    status: ChoreStatus
 ) => {
     return await prisma.choreAssignment.create({
         data: {
@@ -106,10 +106,22 @@ const updateChoreAssignmentStatus = async (
     choreAssignmentId: number,
     status: 'pending' | 'completed' | 'incomplete'
 ): Promise<ChoreAssignment> => {
-    return await prisma.choreAssignment.update({
+    const choreAssignment = await prisma.choreAssignment.findUnique({
+        where: { id: choreAssignmentId },
+        include: { user: true, chore: true },
+    });
+
+    if (!choreAssignment) {
+        throw new Error('Chore assignment not found');
+    }
+    const updatedAssignment = await prisma.choreAssignment.update({
         where: { id: choreAssignmentId },
         data: { status },
     });
+    const message = `The status of your chore "${choreAssignment.chore.title}" has been updated to "${status}".`;
+    await createNotification(choreAssignment.userId, message, 'CHORE_ASSIGNMENT', choreAssignment.chore.id);
+
+    return updatedAssignment;
 };
 
 export default {

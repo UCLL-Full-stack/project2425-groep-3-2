@@ -6,6 +6,8 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import {userRouter} from './controller/user.routes';
 import { choreRouter } from './controller/chore.routes';
+import rewardRouter from "./controller/reward.routes";
+import {notificationRouter} from "./controller/notification.routes";
 import { expressjwt } from 'express-jwt';
 const app = express();
 dotenv.config();
@@ -63,6 +65,19 @@ app.get('/chores/assignments/user/:userId',choreRouter);
 app.post('/chores/remove-assignment', choreRouter);
 app.put('/chores/assignment/:assignmentId/status',choreRouter);
 app.get('/chores/assignments/children',choreRouter);
+app.get('/rewards/:id/redeemed-users', rewardRouter);
+app.post('/rewards/:id/redeem',rewardRouter);
+app.post('/rewards', rewardRouter);
+app.get('/rewards/:id',rewardRouter);
+app.get('/rewards', rewardRouter);
+app.delete('/rewards/:id',rewardRouter);
+app.get('/users/:userId/rewards',rewardRouter);
+app.get('/notifications/all',notificationRouter);
+app.post('/notifications',notificationRouter);
+app.put('/notifications/:id/read',notificationRouter);
+app.get('/notifications/unread',notificationRouter);
+app.get('/notifications',notificationRouter);
+
 app.get('/status', (req, res) => {
     res.json({ message: 'Back-end is running...' });
 });

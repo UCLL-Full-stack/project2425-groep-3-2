@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User, UserRole } from '@prisma/client';
 import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
@@ -36,7 +36,7 @@ const createUser = async (userData: {
     name: string;
     email: string;
     password: string;
-    role: string;
+    role: UserRole;
 }) => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
@@ -53,7 +53,7 @@ const createUser = async (userData: {
 
 const updateUser = async (
     id: number,
-    userData: { name?: string; email?: string; role?: string }
+    userData: { name?: string; email?: string; role?: UserRole }
 ) => {
     return await prisma.user.update({
         where: { id },

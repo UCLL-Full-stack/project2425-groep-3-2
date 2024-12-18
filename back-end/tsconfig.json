@@ -11,7 +11,7 @@
     },
     "include": [
       "src/**/*.ts",
-      "util/types/**/*.d.ts"  // Add this line to ensure the types are loaded
+      "util/types/**/*.d.ts" 
     ],
     "exclude": [
       "node_modules"

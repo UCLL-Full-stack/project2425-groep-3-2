@@ -1,4 +1,4 @@
-import { Chore, ChoreAssignment } from '@prisma/client';
+import { Chore, ChoreAssignment, ChoreStatus } from '@prisma/client';
 import choreRepository from '../repository/chore.db';
 
 const getAllChores = async (): Promise<(Chore & { assignedTo: ChoreAssignment[] })[]> => {
@@ -21,7 +21,7 @@ const removeChoreAssignment = async (userId: number, choreId: number): Promise<v
 const assignChoreToUser = async (
     userId: number,
     choreId: number,
-    status: string = 'incomplete' 
+    status: ChoreStatus, 
 ): Promise<ChoreAssignment> => {
    
     const assignedStatus = status || 'incomplete';

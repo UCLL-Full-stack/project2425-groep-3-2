@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import choreService from '../service/chore.service';
 import { ChoreAssignment } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 const choreRouter = express.Router();
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -383,20 +384,14 @@ choreRouter.put('/chores/assignment/:assignmentId/status', async (req: Request, 
         if (!['pending', 'completed', 'incomplete'].includes(status)) {
             return res.status(400).json({ message: 'Invalid status value' });
         }
-
-        // Fetch the chore assignment details
         const choreAssignment = await choreService.getChoreAssignmentById(Number(assignmentId));
         if (!choreAssignment) {
             return res.status(404).json({ message: 'Chore assignment not found' });
         }
-
-        // Update the status of the chore assignment (without adding points here)
         const updatedAssignment = await choreService.updateChoreAssignmentStatus(
             Number(assignmentId),
             status as 'pending' | 'completed' | 'incomplete'
         );
-
-        // Only add points in the service layer (already handled there)
         res.status(200).json(updatedAssignment);
     } catch (error) {
         console.error(error);
@@ -633,7 +628,7 @@ choreRouter.get('/chores/assignments/children', async (req, res) => {
     try {
         const childUsers = await prisma.user.findMany({
             where: {
-                role: 'child'
+                role: UserRole.child
             },
             select: {
                 id: true

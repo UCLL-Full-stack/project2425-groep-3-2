@@ -18,9 +18,9 @@ const TaskList = () => {
         }
         const fetchedAssignments = await choreService.getChoreAssignmentsByUserId(user.id);
   
-        console.log('Fetched assignments:', fetchedAssignments); // Log data for debugging
+        console.log('Fetched assignments:', fetchedAssignments);
   
-        setChores(fetchedAssignments); // Set assignments directly
+        setChores(fetchedAssignments);
       } catch (err) {
         setError('Failed to fetch chore assignments');
         console.error(err);
