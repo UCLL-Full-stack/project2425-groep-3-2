@@ -118,7 +118,7 @@ const updateChoreAssignmentStatus = async (
         where: { id: choreAssignmentId },
         data: { status },
     });
-    const message = `The status of your chore "${choreAssignment.chore.title}" has been updated to "${status}".`;
+    const message = `The status of the chore "${choreAssignment.user.name}" "${choreAssignment.chore.title}" has been updated to "${status}".`;
     await createNotification(choreAssignment.userId, message, 'CHORE_ASSIGNMENT', choreAssignment.chore.id);
 
     return updatedAssignment;

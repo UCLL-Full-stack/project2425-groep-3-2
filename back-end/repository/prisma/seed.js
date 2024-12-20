@@ -19,6 +19,7 @@ async function main() {
         { name: 'Jane Smith', email: 'jane.smith@test.com', password: 'password456', role: 'child', wallet: 0 },
         { name: 'Bobby Smith', email: 'bobby.smith@test.com', password: 'password789', role: 'child', wallet: 0 },
         { name: 'Alice Johnson', email: 'alice.johnson@test.com', password: 'password234', role: 'child', wallet: 0 },
+        { name: 'Admin', email: 'admin@test.com', password: 'password111', role: 'admin', wallet: 0 },
     ];
 
     const rewards = [

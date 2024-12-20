@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChoreAssignment } from 'types';
 import choreService from '../service/choreService';
@@ -6,23 +7,18 @@ interface PendingAssignmentsProps {
   chores: ChoreAssignment[];
   loading: boolean;
   error: string | null;
+  onApprove: () => void; 
 }
 
-const PendingAssignments: React.FC<PendingAssignmentsProps> = ({ chores, loading, error }) => {
-
-    const handleApprove = async (choreAssignmentId: number) => {
-        try {
-          await choreService.updateChoreAssignmentStatus(choreAssignmentId, 'completed');
-          const updatedChores = await choreService.getChoreAssignmentsForChildren();
-          const pendingAssignments = updatedChores.filter(
-            (assignment: ChoreAssignment) => assignment.status === 'pending'
-          );
-          console.log(pendingAssignments);
-        } catch (err) {
-          console.error('Failed to approve the chore:', err);
-        }
-      };
-      
+const PendingAssignments: React.FC<PendingAssignmentsProps> = ({ chores, loading, error, onApprove }) => {
+  const handleApprove = async (choreAssignmentId: number) => {
+    try {
+      await choreService.updateChoreAssignmentStatus(choreAssignmentId, 'completed');
+      onApprove(); 
+    } catch (err) {
+      console.error('Failed to approve the chore:', err);
+    }
+  };
 
   if (loading) return <p className="text-center text-xl">Loading...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;

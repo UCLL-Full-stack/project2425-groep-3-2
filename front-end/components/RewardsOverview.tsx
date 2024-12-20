@@ -1,19 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { Reward } from '../types'; 
-import rewardService from '../service/rewardService'; 
+import React, { useEffect, useState } from 'react';
+import { Reward } from '../types';
 import Modal from './Modal'; 
+import rewardService from 'service/rewardService';
 
 interface RewardsOverviewProps {
-  userId?: number;
+  rewards: Reward[];
 }
 
-const RewardsOverview: React.FC<RewardsOverviewProps> = ({ userId }) => {
-  const [rewards, setRewards] = useState<Reward[]>([]);
+const RewardsOverview: React.FC<RewardsOverviewProps> = ({ rewards }) => {
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [isClient, setIsClient] = useState(false); 
-
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const handleClaimReward = (reward: Reward) => {
+    setSelectedReward(reward);
+    setShowModal(true); 
+  };
+
+  const cancelRedeem = () => {
+    setShowModal(false);
+  };
+
+  const confirmRedeem = async () => {
+    if (!selectedReward || !currentUserId) return;
+
+    try {
+      const response = await rewardService.redeemReward(selectedReward.id, currentUserId);
+
+      if (response && response.success) {
+        alert('You have successfully claimed the reward!');
+      } else {
+        alert(response?.message || 'Failed to redeem the reward. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error redeeming reward:', error);
+      alert('An error occurred while redeeming the reward.');
+    }
+
+    setShowModal(false);
+  };
+
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -24,58 +50,10 @@ const RewardsOverview: React.FC<RewardsOverviewProps> = ({ userId }) => {
     } else {
       console.error("User data is missing in localStorage");
     }
-  }, []); 
-
-  useEffect(() => {
-    if (currentUserId !== null) {
-      const fetchRewards = async () => {
-        try {
-          const fetchedRewards = await rewardService.getAllRewards();
-          setRewards(fetchedRewards);
-        } catch (error) {
-          console.error('Error fetching rewards:', error);
-        }
-      };
-
-      fetchRewards();
-    }
-  }, [currentUserId]);
-
-
-  const handleClaimReward = async (reward: Reward) => {
-    setSelectedReward(reward);
-    setShowModal(true); 
-  };
-
-const confirmRedeem = async () => {
-    if (!selectedReward || !currentUserId) return;
-  
-    try {
-      const response = await rewardService.redeemReward(selectedReward.id, currentUserId);
-  
-      if (response && response.success) {
-        alert('You have successfully bought the reward!');
-      } else {
-        alert(response?.message || 'Failed to redeem the reward. Please try again.'); 
-      }
-    } catch (error) {
-      console.error('Error redeeming reward:', error);
-      alert('An error occurred while redeeming the reward.'); 
-    }
-  
-    setShowModal(false); 
-  };
-  
-  
-  
-
-
-  const cancelRedeem = () => {
-    setShowModal(false);
-  };
+  }, []);
 
   if (!isClient) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -98,10 +76,11 @@ const confirmRedeem = async () => {
           </li>
         ))}
       </ul>
-      {showModal && (
+
+      {showModal && selectedReward && (
         <Modal onClose={cancelRedeem}>
           <div className="modal-content p-6">
-            <h3 className="text-2xl font-semibold mb-4">Are you sure you want to redeem the reward?</h3>
+            <h3 className="text-2xl font-semibold mb-4">Are you sure you want to buy the reward?</h3>
             <p className="text-lg text-gray-700 mb-4">{selectedReward?.title}</p>
             <p className="text-sm text-gray-600">{selectedReward?.description}</p>
             <div className="modal-actions mt-6 flex justify-between">
@@ -115,7 +94,7 @@ const confirmRedeem = async () => {
                 onClick={confirmRedeem}
                 className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition"
               >
-                Yes, Redeem
+                Yes, Buy
               </button>
             </div>
           </div>

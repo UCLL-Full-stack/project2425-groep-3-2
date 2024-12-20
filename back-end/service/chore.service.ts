@@ -1,28 +1,32 @@
-import { Chore, ChoreAssignment, ChoreStatus } from '@prisma/client';
+import { ChoreInput, ChoreAssignmentInput, ChoreStatus } from '../types'
 import choreRepository from '../repository/chore.db';
 
-const getAllChores = async (): Promise<(Chore & { assignedTo: ChoreAssignment[] })[]> => {
+const getAllChores = async (): Promise<(ChoreInput & { assignedTo: ChoreAssignmentInput[] })[]> => {
     return await choreRepository.getAllChores();
 };
 
-const getChoreById = async (id: number): Promise<Chore | null> => {
+const getChoreById = async (id: number): Promise<ChoreInput | null> => {
     return await choreRepository.getChoreById(id);
 };
 
-const addChore = async (title: string, description: string, points: number): Promise<Chore> => {
+const addChore = async (title: string, description: string, points: number): Promise<ChoreInput> => {
     return await choreRepository.addChore(title, description, points);
 };
 
 const removeChoreAssignment = async (userId: number, choreId: number): Promise<void> => {
-    await choreRepository.removeChoreAssignment(userId, choreId);
-};
+    const result = await choreRepository.removeChoreAssignment(userId, choreId);
+  
+    if (result.count === 0) {
+      throw new Error('No assignment found to remove');
+    }
+  };
 
 
 const assignChoreToUser = async (
     userId: number,
     choreId: number,
     status: ChoreStatus, 
-): Promise<ChoreAssignment> => {
+): Promise<ChoreAssignmentInput> => {
    
     const assignedStatus = status || 'incomplete';
 
@@ -30,22 +34,22 @@ const assignChoreToUser = async (
 };
 
 
-const getChoresByUserId = async (userId: number): Promise<Chore[]> => {
+const getChoresByUserId = async (userId: number): Promise<ChoreInput[]> => {
     return await choreRepository.getChoresByUserId(userId);
 };
-const getChoreAssignmentsByUserId = async (userId: number): Promise<ChoreAssignment[]> => {
+const getChoreAssignmentsByUserId = async (userId: number): Promise<ChoreAssignmentInput[]> => {
     return await choreRepository.getChoreAssignmentsByUserId(userId);
 };
 
 
-const getChoreAssignmentById = async (assignmentId: number): Promise<ChoreAssignment | null> => {
+const getChoreAssignmentById = async (assignmentId: number): Promise<ChoreAssignmentInput | null> => {
     return await choreRepository.getChoreAssignmentById(assignmentId);
 };
 
 const updateChoreAssignmentStatus = async (
     choreAssignmentId: number,
     status: 'pending' | 'completed' | 'incomplete'
-): Promise<ChoreAssignment> => {
+): Promise<ChoreAssignmentInput> => {
     const assignment = await getChoreAssignmentById(choreAssignmentId);
 
     if (!assignment) {
@@ -55,11 +59,14 @@ const updateChoreAssignmentStatus = async (
     if (assignment.status === 'completed' && status === 'completed') {
         return assignment;
     }
+
     if (status === 'completed') {
         await addPointsToUserWallet(assignment.userId, assignment.choreId);
     }
+
     return await choreRepository.updateChoreAssignmentStatus(choreAssignmentId, status);
 };
+
 
 const addPointsToUserWallet = async (userId: number, choreId: number): Promise<void> => {
     const chore = await choreRepository.getChoreById(choreId);

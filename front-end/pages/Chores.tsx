@@ -6,6 +6,8 @@ import ChoreDetail from '../components/ChoreDetail';
 import { ChoreAssignment, User, Chore } from '../types';
 import Header from '../components/Header';
 import { useRouter } from 'next/router';
+import { useNotifications } from '../hooks/useNotifications';
+import Modal from '@components/Modal';
 
 const ChoresOverview = () => {
   const [chores, setChores] = useState<Chore[]>([]);
@@ -14,6 +16,12 @@ const ChoresOverview = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedChore, setSelectedChore] = useState<Chore | null>(null);
   const router = useRouter();
+  const {
+    notifications,
+    isModalOpen,
+    notificationMessage,
+    handleCloseModal,
+  } = useNotifications();
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -112,6 +120,11 @@ const ChoresOverview = () => {
             />
           </div>
         </div>
+      )}
+      {notificationMessage && (
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} contentLabel="New Notification">
+        <p>{notificationMessage}</p>
+      </Modal>
       )}
     </div>
   );

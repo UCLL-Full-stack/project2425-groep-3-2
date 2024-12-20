@@ -45,12 +45,6 @@ const MyRewardsOverview: React.FC<MyRewardsOverviewProps> = ({ rewards, onDelete
                   >
                     Use
                   </button>
-                  <button
-                    onClick={() => onDeleteReward(reward.id)}
-                    className="mt-2 text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
                 </div>
               </li>
             ))}

@@ -38,7 +38,7 @@ model ChoreAssignment {
   status    ChoreStatus
   assignedAt DateTime @default(now())
 
-  user  User  @relation(fields: [userId], references: [id])
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   chore Chore @relation(fields: [choreId], references: [id])
 
   @@unique([userId, choreId])
@@ -61,7 +61,7 @@ model UserReward {
   rewardId  Int
   redeemedAt DateTime @default(now())
 
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   reward  Reward @relation(fields: [rewardId], references: [id])
 }
 
@@ -76,7 +76,7 @@ model Notification {
   createdAt   DateTime  @default(now())
   extraData  String?
 
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   chore       Chore?    @relation(fields: [choreId], references: [id])
   reward      Reward?   @relation(fields: [rewardId], references: [id])
 

@@ -39,16 +39,24 @@ const createUser = async (userData: {
     role: UserRole;
 }) => {
     const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+  const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
-    return await prisma.user.create({
-        data: {
-            name: userData.name,
-            email: userData.email,
-            password: hashedPassword,  
-            role: userData.role,
-        },
-    });
+  const existingUser = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+
+  if (existingUser) {
+    throw new Error('Email is already taken');
+  }
+
+  return await prisma.user.create({
+    data: {
+      name: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+      role: userData.role,
+    },
+  });
 };
 
 const updateUser = async (

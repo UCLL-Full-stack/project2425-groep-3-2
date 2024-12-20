@@ -1,16 +1,16 @@
-import { User, UserRole } from '@prisma/client';
+import { UserInput, Role } from '../types'
 import userRepository from '../repository/user.db';
 import choreRepository from '../repository/chore.db';
 import bcrypt from 'bcrypt';
 import generateJWTToken from '../util/jwt';
 
 interface AuthenticatorResponse {
-    user: User;
+    user: UserInput;
     token: string;
     role: string;
 }
 
-const getAllUsers = async (): Promise<User[]> => {
+const getAllUsers = async (): Promise<UserInput[]> => {
     return await userRepository.getAllUsers();
 };
 
@@ -24,7 +24,7 @@ const getUserById = async (id: number): Promise<{
     return await userRepository.getUserById(id);
 };
 
-const getUserByEmail = async (email: string): Promise<User | null> => {
+const getUserByEmail = async (email: string): Promise<UserInput | null> => {
     return await userRepository.getUserByEmail(email);
 };
 
@@ -48,14 +48,14 @@ const authenticate = async (email: string, password: string): Promise<Authentica
     };
 };
 
-const createUser = async (userData: { name: string; email: string; password: string; role: UserRole }): Promise<User> => {
+const createUser = async (userData: { name: string; email: string; password: string; role: Role }): Promise<UserInput> => {
     return await userRepository.createUser(userData);
 };
 
 const updateUser = async (
     id: number,
-    userData: { name?: string; email?: string; role?: UserRole }
-): Promise<User | null> => {
+    userData: { name?: string; email?: string; role?: Role }
+): Promise<UserInput | null> => {
     return await userRepository.updateUser(id, userData);
 };
 

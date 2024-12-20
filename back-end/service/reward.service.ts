@@ -1,14 +1,14 @@
-import { Reward, UserReward, User } from '@prisma/client';
+import { RewardInput, UserReward, UserInput } from '../types'
 import rewardRepository from '../repository/reward.db';
 
-const getAllRewards = async (): Promise<Reward[]> => {
+const getAllRewards = async (): Promise<RewardInput[]> => {
     return await rewardRepository.getAllRewards();
 };
-const getRewardById = async (rewardId: number): Promise<Reward | null> => {
+const getRewardById = async (rewardId: number): Promise<RewardInput | null> => {
     return await rewardRepository.getRewardById(rewardId);
 };
 
-const addReward = async (title: string, description: string, points: number): Promise<Reward> => {
+const addReward = async (title: string, description: string, points: number): Promise<RewardInput> => {
     return await rewardRepository.addReward(title, description, points);
 };
 interface RedeemRewardResponse {
@@ -42,16 +42,16 @@ const redeemReward = async (userId: number, rewardId: number): Promise<RedeemRew
     }
 };
 
-const getRedeemedUsers = async (rewardId: number): Promise<User[]> => {
+const getRedeemedUsers = async (rewardId: number): Promise<UserInput[]> => {
     return await rewardRepository.getRedeemedUsers(rewardId);
 };
 
 
-const getRewardsByUser = async (userId: number): Promise<Reward[]> => {
+const getRewardsByUser = async (userId: number): Promise<RewardInput[]> => {
     const userRewards = await rewardRepository.getRewardsByUser(userId);
     return userRewards.map(userReward => userReward.reward);
 };
-const deleteReward = async (rewardId: number, userId: number): Promise<Reward> => {
+const deleteReward = async (rewardId: number, userId: number): Promise<RewardInput> => {
     return await rewardRepository.deleteReward(rewardId, userId);
 };
 export default {

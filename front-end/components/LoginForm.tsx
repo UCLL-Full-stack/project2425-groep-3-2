@@ -19,10 +19,12 @@ const LoginForm = () => {
                 const userRole = response.user.role;
 
                 if (userRole === 'parent') {
-                    router.push('/ChildrenOverview');
+                    router.push('/HomePage');
                 } else if (userRole === 'child') {
-                    router.push('/TaskOverview');
-                } else {
+                    router.push('/HomePage');
+                } else if (userRole === 'admin') {
+                    router.push('/AdminPage');
+                }else {
                     setError('Unauthorized role');
                 }
             }
